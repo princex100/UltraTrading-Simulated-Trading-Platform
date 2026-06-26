@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-linkedin-bg: #f3f2ef;
@@ -17,4 +18,9 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+.dark body {
+  background-color: #111111;
+  color: #f3f4f6;
 }

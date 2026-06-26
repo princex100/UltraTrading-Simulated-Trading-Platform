@@ -2,7 +2,11 @@ import mongoose from 'mongoose';
 
 const connectDB = async () => {
     try {
-         const uri = process.env.MONGODB_URI.endsWith('/') 
+        if (!process.env.MONGODB_URI) {
+            throw new Error("MONGODB_URI is missing from environment variables.");
+        }
+
+        const uri = process.env.MONGODB_URI.endsWith('/') 
             ? process.env.MONGODB_URI.slice(0, -1) 
             : process.env.MONGODB_URI;
 

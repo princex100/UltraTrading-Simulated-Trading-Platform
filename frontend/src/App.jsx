@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 // Layouts
 import MainLayout from './layouts/MainLayout';
@@ -21,6 +23,16 @@ import Notification from './components/Notification';
 // import ProtectedRoute from './components/ProtectedRoute'; // Use when auth is ready
 
 function App() {
+  const theme = useSelector((state) => state.theme?.theme || 'light');
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
   return (
     <>
       <Notification />
