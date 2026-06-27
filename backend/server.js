@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
-import { app } from "./app.js";
+import { app, server } from "./app.js";
 import { startStockSimulator } from "./services/stockSimulator.js";
 
 dotenv.config({
@@ -11,13 +11,13 @@ const PORT = process.env.PORT || 5000;
 
 connectDB()
 .then(() => {
-    app.listen(PORT, () => {
+
+    
+    server.listen(PORT, () => {
         console.log(`⚙️ Server is running at port : ${PORT}`);
     });
     
-    // Start background services
-    // always alive once called
-    //changes prices live after every 10 seconds
+    
     startStockSimulator();  
     
 })

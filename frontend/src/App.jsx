@@ -33,7 +33,7 @@ function App() {
 
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme?.theme || 'light');
-  
+
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
 
@@ -110,7 +110,7 @@ function App() {
           <Route path="/stock/:symbol" element={<Stock />} />
           <Route path="/about" element={<About />} />
           <Route path="/docs" element={<Docs />} />
-          
+
           {/* Catch all */}
           <Route path="*" element={<NotFound />} />
         </Route>

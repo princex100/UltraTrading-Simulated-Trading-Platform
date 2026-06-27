@@ -3,7 +3,7 @@ import { store } from '../redux/store';
 import { logout } from '../redux/userSlice';
 
 // TODO: Define base URL
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'http://localhost:8000/api/v1';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,

@@ -41,6 +41,14 @@ const stockSchema = new Schema(
         type:Boolean,
         required:true,
        },
+       numberofshares:{   
+            type:Number,
+            required:true,
+       },
+       percentageChange:{   
+            type:Number,
+            required:true,
+       },
        
       
     },
