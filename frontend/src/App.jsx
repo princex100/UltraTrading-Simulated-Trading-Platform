@@ -9,6 +9,7 @@ import AuthLayout from './layouts/AuthLayout';
 
 
 // Pages
+import LandingPage from './pages/LandingPage';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -95,6 +96,8 @@ function App() {
       <Notification />
       <Routes>
 
+        <Route path="/" element={<LandingPage />} />
+
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -102,7 +105,7 @@ function App() {
 
 
         <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/transactions" element={<Transactions />} />
@@ -110,10 +113,10 @@ function App() {
           <Route path="/stock/:symbol" element={<Stock />} />
           <Route path="/about" element={<About />} />
           <Route path="/docs" element={<Docs />} />
-
-          {/* Catch all */}
-          <Route path="*" element={<NotFound />} />
         </Route>
+
+        {/* Catch all */}
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
     </>

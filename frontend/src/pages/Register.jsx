@@ -1,7 +1,58 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import axiosInstance from '../services/axios';
 
 
 const Register = () => {
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [msg, setMsg] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+
+  const handleSubmit = async (e) => {
+    
+    e.preventDefault();
+
+    setError(null);
+    setMsg(null);
+    setLoading(true);
+
+
+    try {
+
+      const res = await axiosInstance.post("/users/register", {
+        name,
+        email,
+        password
+      });
+
+
+      if (res.data) {
+        setMsg(res.data.message);
+        // Optionally navigate to login after a delay
+        // setTimeout(() => navigate('/login'), 2000);
+      }
+
+    } catch (err) {
+
+      setError(err.response?.data?.message || "Failed to register");
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
@@ -18,7 +69,21 @@ const Register = () => {
         </div>
 
 
-        <form className="mt-8 space-y-6">
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm text-center">
+            {error}
+          </div>
+        )}
+
+        {msg && (
+          <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm text-center">
+            {msg}
+          </div>
+        )}
+
+
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          
           <div className="rounded-md shadow-sm space-y-4">
             
             <div>
@@ -26,7 +91,9 @@ const Register = () => {
                 name="name"
                 type="text"
                 required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-[#2b2b40] rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-colors duration-200"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-[#2b2b40] rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200"
                 placeholder="Full Name"
               />
             </div>
@@ -36,7 +103,9 @@ const Register = () => {
                 name="email"
                 type="email"
                 required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-[#2b2b40] rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-colors duration-200"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-[#2b2b40] rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200"
                 placeholder="Email address"
               />
             </div>
@@ -46,7 +115,9 @@ const Register = () => {
                 name="password"
                 type="password"
                 required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-[#2b2b40] rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-colors duration-200"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-[#2b2b40] rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200"
                 placeholder="Password"
               />
             </div>
@@ -57,18 +128,20 @@ const Register = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-[#0a66c2] hover:bg-[#004182] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-[#0a66c2] hover:bg-[#004182] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Agree & Join
+              {loading ? "Registering..." : "Agree & Join"}
             </button>
           </div>
+
         </form>
 
 
         <div className="text-center mt-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Already on Ultra Trading?{' '}
-            <Link to="/login" className="font-medium text-[#0a66c2] hover:underline">
+            <Link to="/login" className="font-medium text-[#0a66c2] dark:text-blue-500 hover:underline">
               Sign in
             </Link>
           </p>
@@ -78,6 +151,8 @@ const Register = () => {
 
     </div>
   );
+
 };
+
 
 export default Register;
