@@ -1,6 +1,7 @@
 import SearchBar from '../components/SearchBar';
 import Filter from '../components/Filter';
 import StockCard from '../components/StockCard';
+import { useState } from 'react';
 
 const Home = () => {
   const dummyStocks = [
@@ -10,6 +11,8 @@ const Home = () => {
     { symbol: 'TSLA', name: 'Tesla Inc.', price: 245.50, change: -1.50 },
     { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 140.20, change: 0.75 },
   ];
+
+  
 
   return (
     <div className="space-y-6">

@@ -1,19 +1,26 @@
 import { Link } from 'react-router-dom';
 
+
 const Login = () => {
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#111111] py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
+      
       <div className="max-w-md w-full space-y-8 bg-white dark:bg-[#1e1e2d] p-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 transition-colors duration-200">
+        
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-[#0a66c2] dark:text-blue-500">
-            PaperTrade
+            Ultra Trading
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Sign in to your account
           </p>
         </div>
+
+
         <form className="mt-8 space-y-6">
           <div className="rounded-md shadow-sm space-y-4">
+            
             <div>
               <input
                 id="email-address"
@@ -24,6 +31,7 @@ const Login = () => {
                 placeholder="Email address"
               />
             </div>
+            
             <div>
               <input
                 id="password"
@@ -34,7 +42,9 @@ const Login = () => {
                 placeholder="Password"
               />
             </div>
+
           </div>
+
 
           <div>
             <button
@@ -45,15 +55,19 @@ const Login = () => {
             </button>
           </div>
         </form>
+
+
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            New to PaperTrade?{' '}
+            New to Ultra Trading?{' '}
             <Link to="/register" className="font-medium text-[#0a66c2] hover:underline">
               Join now
             </Link>
           </p>
         </div>
+
       </div>
+
     </div>
   );
 };

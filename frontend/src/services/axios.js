@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { store } from '../redux/store';
+import { logout } from '../redux/userSlice';
 
 // TODO: Define base URL
 const BASE_URL = 'http://localhost:5000/api';
@@ -11,10 +13,13 @@ const axiosInstance = axios.create({
   // TODO: Add credentials config if needed
 });
 
-// TODO: Request Interceptor
+// Request Interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Modify config before request is sent (e.g., attach tokens)
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers['Authorization'] = `Bearer ${accessToken}`;
+    }
     return config;
   },
   (error) => {
@@ -22,13 +27,43 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// TODO: Response Interceptor & Refresh Token Logic
+// Response Interceptor & Refresh Token Logic
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
-    // Handle global errors, token refresh, etc.
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+
+        const response = await axiosInstance.post('/users/refresh-token', { refreshToken });
+
+        const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', newRefreshToken);
+
+        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+
+        return await axiosInstance(originalRequest);
+      } catch (refreshError) {
+        store.dispatch(logout());
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
+
+        throw new Error('Failed to refresh token. Please login again.');
+      }
+    }
     return Promise.reject(error);
   }
 );
