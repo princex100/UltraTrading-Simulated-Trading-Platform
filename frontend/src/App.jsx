@@ -28,6 +28,7 @@ import Notification from './components/Notification';
 
 import axiosInstance from './services/axios';
 import { setUser, logout } from './redux/userSlice';
+import VerifyEmail from './pages/verify-email';
 
 
 function App() {
@@ -102,7 +103,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>
-
+  
+         <Route path='/verify-email' element={<VerifyEmail/>}/>
 
         <Route element={<MainLayout />}>
           <Route path="/home" element={<Home />} />
