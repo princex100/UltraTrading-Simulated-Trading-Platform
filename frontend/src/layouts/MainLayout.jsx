@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from '../components/navbar/Navbar';
 import Sidebar from '../components/sidebar/Sidebar';
 import NewsPanel from '../components/NewsPanel';
+import Chatbot from '../components/Chatbot';
 
 const MainLayout = () => {
   return (
@@ -16,6 +17,7 @@ const MainLayout = () => {
           <NewsPanel />
         </div>
       </main>
+      <Chatbot />
     </div>
   );
 };
