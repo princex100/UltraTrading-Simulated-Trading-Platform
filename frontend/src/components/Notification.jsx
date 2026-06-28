@@ -3,8 +3,9 @@ import { Toaster } from 'react-hot-toast';
 const Notification = () => {
   return (
     <Toaster 
-      position="top-right"
+      position="bottom-center"
       toastOptions={{
+        duration: 3000,
         className: 'text-sm font-semibold text-gray-900',
         style: {
           border: '1px solid #e0dfdc',

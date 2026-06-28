@@ -1,58 +1,18 @@
 import SearchBar from '../components/SearchBar';
 import Filter from '../components/Filter';
 import StockCard from '../components/StockCard';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import axiosInstance from '../services/axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { setStocks } from '../redux/stocksclice';
 
-
-const socket = io('http://localhost:8000', {
-    withCredentials: true,
-});
 
 
 const Home = () => {
+  const stocks = useSelector((state) => state.stock.stocks);
 
-  const [stocks, setStocks] = useState([]);
-
-
-  useEffect(() => {
-
-     const fetchStocks = async () => {
-
-        try {
-
-            const res = await axiosInstance.get("/stocks");
-
-
-            if (res.data?.data) {
-                setStocks(res.data.data);
-            } else {
-                setStocks(res.data);
-            }
-
-        } catch (err) {
-
-            console.log(err);
-
-        }
-
-    };
-
-
-    fetchStocks();
-    
-
-    socket.on("stock", (data) => {
-        setStocks(data);
-    });
-
-
-    return () => {
-        socket.off("stock");
-    };
-
-  }, []);
+  
 
 
   return (
@@ -71,7 +31,7 @@ const Home = () => {
       
       <div className="space-y-4">
 
-        {stocks.length > 0 ? (
+        {stocks && stocks.length > 0 ? (
 
           stocks.map(stock => (
             <StockCard key={stock._id} stock={stock} />

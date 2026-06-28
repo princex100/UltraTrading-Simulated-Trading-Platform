@@ -33,8 +33,8 @@ const Login = () => {
 
       if (response.data) {
         
-        // Usually you extract the user from response.data.data.user
-        dispatch(setUser(response.data.data?.user || response.data));
+        // Extract the user object securely. The API returns it in response.data.data
+        dispatch(setUser(response.data.data));
 
         // You might need to set localStorage here if not handled in interceptors
         if (response.data.data?.accessToken) {
