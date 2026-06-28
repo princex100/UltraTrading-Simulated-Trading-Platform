@@ -6,8 +6,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Watchlist } from "../models/Watchlist.js";
-import mongoose from "mongoose";
-
 
 
 
@@ -23,16 +21,12 @@ export const addStockToWatchlist = asyncHandler(async (req, res) => {
     const existingWatchlist = await Watchlist.findOne({ userId });
 
 
-    const convertedStockId=new mongoose.Types.ObjectId(stockId);
-    
     if (existingWatchlist) {
 
         // Check if stock already exists in the watchlist
-
         const stockExists = existingWatchlist.stocks.some(
             (id) => id.toString() === stockId
         );
-
 
 
         if (stockExists) {
@@ -43,14 +37,13 @@ export const addStockToWatchlist = asyncHandler(async (req, res) => {
 
 
         existingWatchlist.stocks.push(stockId);
+        
         await existingWatchlist.save();
-
 
 
         return res.status(200).json(
             new ApiResponse(200, existingWatchlist, "Stock added to watchlist")
         );
-
 
     }
 
@@ -62,31 +55,35 @@ export const addStockToWatchlist = asyncHandler(async (req, res) => {
     });
 
 
-
     return res.status(201).json(
         new ApiResponse(201, newWatchlist, "Watchlist created and stock added")
     );
-
 });
     
 
-export const getwatchlist=asyncHandler(async(req,res,next)=>{
+export const getwatchlist = asyncHandler(async (req, res) => {
+    const user = req.user;
 
-    const user=req.user;
 
-    if(!user){
-        throw new ApiError(400,"user not found")
+    if (!user) {
+        throw new ApiError(400, "User not found");
     }
 
-    const watchlist=await Watchlist.findOne({userId:user._id});
+
+    const watchlist = await Watchlist.findOne({ userId: user._id });
     
-    if(!watchlist){
-        return res.status(404).json(new ApiResponse(404,{},"watchlist not found"))
+
+    if (!watchlist) {
+        return res.status(404).json(
+            new ApiResponse(404, {}, "Watchlist not found")
+        );
     }
-const populatedWatchlist=await watchlist.populate("stocks")
 
 
+    const populatedWatchlist = await watchlist.populate("stocks");
 
-    return res.status(200).json(new ApiResponse(200,populatedWatchlist.stocks,"watchlist fetched successfully"))
 
-})
+    return res.status(200).json(
+        new ApiResponse(200, populatedWatchlist.stocks, "Watchlist fetched successfully")
+    );
+});

@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import axiosInstance from "../services/axios";
 import toast from "react-hot-toast";
+import StockCard from "../components/StockCard";
 
 const Watchlist = () => {
 
@@ -10,25 +11,32 @@ const Watchlist = () => {
 
   const [watchlistArray,setWatchlistArray]=useState([]);
 
-  useEffect(()=>{
-    const fetchwatchlist=async()=>{
-
+  useEffect(() => {
+    const fetchwatchlist = async () => {
       try {
-         const res=await axiosInstance.get("/watchlist")
+         const res = await axiosInstance.get("/watchlist");
 
-         if(res && res.data && res.data.data){
+
+         if (res && res.data && res.data.data) {
           setWatchlistArray(res.data.data);
          }
 
-         toast.success(res.data.message,{id:"watchlist-fetch-success"})
-      } catch (error) {
-        toast.error(error?.data?.message || "watchlist not found.");
-        console.log(error);
-      }
-    }
 
-    fetchwatchlist();
-  },[])
+         toast.success(res.data.message, { id: "watchlist-fetch-success" });
+
+      } catch (error) {
+
+        toast.error(error?.data?.message || "Watchlist not found.");
+        
+      }
+    };
+
+
+    if (user) {
+      fetchwatchlist();
+    }
+    
+  }, [user]);
 
   return (
     <div className="bg-white dark:bg-[#1e1e2d] rounded-lg border border-gray-200 dark:border-gray-800 p-6 transition-colors duration-200 min-h-[60vh]">
@@ -48,13 +56,14 @@ const Watchlist = () => {
         <div className="space-y-4">
           <p className="text-gray-600 dark:text-gray-400 mb-6">Keep an eye on your favorite stocks.</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {watchlistArray.map((item) => (
-                <div key={item._id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-                  <h3 className="font-bold text-gray-900 dark:text-gray-100">{item.symbol}</h3>
-                  <p className="text-gray-500">Add your stock details here...</p>
-                </div>
-            ))}
+          <div className="space-y-4">
+            {watchlistArray && watchlistArray.length > 0 ? (
+              watchlistArray.map((item) => (
+                <StockCard key={item._id} stock={item} />
+              ))
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-center py-4">Your watchlist is currently empty.</p>
+            )}
           </div>
 
         </div>
