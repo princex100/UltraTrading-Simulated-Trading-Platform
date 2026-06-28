@@ -74,7 +74,7 @@ const Home = () => {
         {stocks.length > 0 ? (
 
           stocks.map(stock => (
-            <StockCard key={stock._id || stock.symbol} stock={stock} />
+            <StockCard key={stock._id} stock={stock} />
           ))
 
         ) : (

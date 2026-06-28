@@ -1,13 +1,130 @@
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import axiosInstance from '../services/axios';
+import { Loader2 } from 'lucide-react';
 
 const Stock = () => {
-  const { symbol } = useParams();
+  const { id: stockId } = useParams(); // Using stockId since the route param is named symbol
+  const [stock, setStock] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStock = async () => {
+      try {
+        const response = await axiosInstance.get(`/stocks/${stockId}`);
+        if (response.data?.success) {
+          setStock(response.data.data);
+        } else {
+          setError('Failed to load stock data');
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load stock data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStock();
+  }, [stockId]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-8 h-8 text-[#0a66c2] animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !stock) {
+    return (
+      <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg border border-red-200 dark:border-red-800">
+        {error || 'Stock not found.'}
+      </div>
+    );
+  }
+
+  const isPositive = !stock.priceDown; // Or we can use stock.percentageChange >= 0
 
   return (
-    <div className="bg-white dark:bg-[#1e1e2d] rounded-lg border border-gray-200 dark:border-gray-800 p-6 transition-colors duration-200">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Stock Details: {symbol?.toUpperCase()}</h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">Detailed view, charts, and trading options for {symbol?.toUpperCase()}.</p>
-      {/* Placeholder for Chart and Order Book */}
+    <div className="space-y-6">
+      
+      {/* Header Card */}
+      <div className="bg-white dark:bg-[#1e1e2d] rounded-xl border border-gray-200 dark:border-gray-800 p-6 transition-colors duration-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{stock.symbol}</h1>
+            <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-full">
+              {stock.sector}
+            </span>
+          </div>
+          <h2 className="text-lg text-gray-500 dark:text-gray-400">{stock.name}</h2>
+        </div>
+
+        <div className="flex flex-col items-start md:items-end">
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+            ₹{stock.currentPrice.toFixed(2)}
+          </p>
+          <p className={`text-lg font-semibold ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+            {isPositive ? '+' : ''}{stock.percentageChange.toFixed(2)}%
+          </p>
+        </div>
+
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-4">
+        <button className="flex-1 md:flex-none px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors shadow-sm">
+          Buy {stock.symbol}
+        </button>
+        <button className="flex-1 md:flex-none px-8 py-3 bg-[#0a66c2] hover:bg-[#004182] text-white font-semibold rounded-lg transition-colors shadow-sm">
+          Add to Watchlist
+        </button>
+      </div>
+
+      {/* Details Grid Card */}
+      <div className="bg-white dark:bg-[#1e1e2d] rounded-xl border border-gray-200 dark:border-gray-800 p-6 transition-colors duration-200 shadow-sm">
+        
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gray-800 pb-4">
+          Market Statistics
+        </h3>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Day High</p>
+            <p className="text-lg font-semibold text-gray-900 dark:text-white">₹{stock.high.toFixed(2)}</p>
+          </div>
+          
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Day Low</p>
+            <p className="text-lg font-semibold text-gray-900 dark:text-white">₹{stock.low.toFixed(2)}</p>
+          </div>
+          
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Market Cap</p>
+            <p className="text-lg font-semibold text-gray-900 dark:text-white">₹{(stock.marketCap / 10000000).toFixed(2)} Cr</p>
+          </div>
+          
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Volume (Shares)</p>
+            <p className="text-lg font-semibold text-gray-900 dark:text-white">{stock.numberofshares.toLocaleString()}</p>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Description Card */}
+      <div className="bg-white dark:bg-[#1e1e2d] rounded-xl border border-gray-200 dark:border-gray-800 p-6 transition-colors duration-200 shadow-sm">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">About {stock.name}</h3>
+        <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+          {stock.description}
+        </p>
+      </div>
+
     </div>
   );
 };

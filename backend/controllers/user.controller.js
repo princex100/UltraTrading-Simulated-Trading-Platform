@@ -9,6 +9,36 @@ import nodemailer from "nodemailer";
 import Mailgen from "mailgen";
 
 
+
+const generateAcessAndRefreshTokens = async (userid) => {
+    try {
+        
+        const user=await User.findById(userid);
+
+        if(!user){
+            throw new ApiError(404, "User not found")
+        }
+
+        const refreshToken=user.generateRefreshToken()
+        const accessToken=user.generateAccessToken()
+
+        user.refreshToken=refreshToken
+        user.refreshTokenExpiry=Date.now() + 60 * 60 * 1000 * 7 // 7 days
+
+
+        await user.save({validateBeforeSave: false})
+
+        return {accessToken,refreshToken}
+            
+
+        
+    } catch (error) {
+        
+    }
+}
+
+
+
 const mailgenContent = (name, verificationUrl) => {
 
     const mailGenerator = new Mailgen({
@@ -184,3 +214,38 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     );
 
 });
+
+export const login=asyncHandler(async(req,res)=>{
+    const {email,password}=req.body
+    
+    if(email?.trim()=== ""||password?.trim()=== ""){
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const user=await User.findOne({email})
+
+    if(!user){
+        throw new ApiError(404, "User not found")
+    }
+
+    const isPasswordValid=await bcrypt.compare(password,user.password)
+
+    if(!isPasswordValid){
+        throw new ApiError(400, "Invalid password")
+    }
+
+    const {accessToken,refreshToken}=generateAcessAndRefreshTokens(user._id)
+
+    const options={
+        httpOnly:true,
+        secure:true
+    }
+
+    res.status(200).
+    cookie("accessToken",accessToken,options).
+    cookie("refreshToken",refreshToken,options)
+    .json(
+        new ApiResponse(200, user, "User logged in successfully")
+    )
+
+})

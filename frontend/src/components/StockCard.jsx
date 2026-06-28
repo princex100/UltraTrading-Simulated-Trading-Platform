@@ -1,7 +1,10 @@
+import { Link } from 'react-router-dom';
+
 const StockCard = ({ stock }) => {
 
   const isPositive = stock.percentageChange >= 0;
 
+  
 
   return (
     <div className="bg-white dark:bg-[#1e1e2d] rounded-lg border border-gray-200 dark:border-gray-800 p-4 flex items-center justify-between hover:shadow-sm transition-shadow duration-200">
@@ -30,9 +33,9 @@ const StockCard = ({ stock }) => {
       </div>
       
       <div className="ml-4">
-        <button className="px-4 py-1.5 border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 font-semibold rounded-full hover:bg-blue-50 dark:hover:bg-[#2a2a3b] transition-colors text-sm">
+        <Link to={`/stock/${stock._id}`} className="px-4 py-1.5 border border-[#0a66c2] dark:border-blue-500 text-[#0a66c2] dark:text-blue-400 font-semibold rounded-full hover:bg-blue-50 dark:hover:bg-[#2a2a3b] transition-colors text-sm">
           Details
-        </button>
+        </Link>
       </div>
 
     </div>

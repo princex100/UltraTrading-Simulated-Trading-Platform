@@ -112,7 +112,7 @@ function App() {
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/transactions" element={<Transactions />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/stock/:symbol" element={<Stock />} />
+          <Route path="/stock/:id" element={<Stock />} />
           <Route path="/about" element={<About />} />
           <Route path="/docs" element={<Docs />} />
         </Route>

@@ -24,3 +24,21 @@ export const getAllStocks = async (req, res) => {
     }
 
 };
+
+
+export const getStockById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const stock = await Stock.findById(id);
+
+        if (!stock) {
+            throw new ApiError(404, "Stock not found");
+        }
+
+        res.status(200).json(
+            new ApiResponse(200, stock, "Stock fetched successfully")
+        );
+    } catch (error) {
+        throw new ApiError(500, "Error fetching stock");
+    }
+};
