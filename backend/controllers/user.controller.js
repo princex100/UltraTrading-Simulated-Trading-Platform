@@ -19,8 +19,8 @@ const generateAcessAndRefreshTokens = async (userid) => {
             throw new ApiError(404, "User not found")
         }
 
-        const refreshToken=user.generateRefreshToken()
-        const accessToken=user.generateAccessToken()
+        const refreshToken= await user.generateRefreshToken()
+        const accessToken= await user.generateAccessToken()
 
         user.refreshToken=refreshToken
         user.refreshTokenExpiry=Date.now() + 60 * 60 * 1000 * 7 // 7 days
@@ -234,18 +234,24 @@ export const login=asyncHandler(async(req,res)=>{
         throw new ApiError(400, "Invalid password")
     }
 
-    const {accessToken,refreshToken}=generateAcessAndRefreshTokens(user._id)
+    const {accessToken,refreshToken} = await generateAcessAndRefreshTokens(user._id)
 
     const options={
         httpOnly:true,
         secure:true
     }
 
+
+
+    const userResponse = user.toObject();
+    userResponse.accessToken = accessToken;
+    userResponse.refreshToken = refreshToken;
+
     res.status(200).
     cookie("accessToken",accessToken,options).
     cookie("refreshToken",refreshToken,options)
     .json(
-        new ApiResponse(200, user, "User logged in successfully"),
+        new ApiResponse(200, userResponse, "User logged in successfully"),
     )
 
 })

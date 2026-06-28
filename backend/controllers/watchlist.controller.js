@@ -30,7 +30,7 @@ export const addStockToWatchlist = asyncHandler(async (req, res) => {
         // Check if stock already exists in the watchlist
 
         const stockExists = existingWatchlist.stocks.some(
-            (id) => id === convertedStockId
+            (id) => id.toString() === stockId
         );
 
 
@@ -61,7 +61,7 @@ export const addStockToWatchlist = asyncHandler(async (req, res) => {
         stocks: [stockId]
     });
 
-    
+
 
     return res.status(201).json(
         new ApiResponse(201, newWatchlist, "Watchlist created and stock added")
@@ -69,3 +69,24 @@ export const addStockToWatchlist = asyncHandler(async (req, res) => {
 
 });
     
+
+export const getwatchlist=asyncHandler(async(req,res,next)=>{
+
+    const user=req.user;
+
+    if(!user){
+        throw new ApiError(400,"user not found")
+    }
+
+    const watchlist=await Watchlist.findOne({userId:user._id});
+    
+    if(!watchlist){
+        return res.status(404).json(new ApiResponse(404,{},"watchlist not found"))
+    }
+const populatedWatchlist=await watchlist.populate("stocks")
+
+
+
+    return res.status(200).json(new ApiResponse(200,populatedWatchlist.stocks,"watchlist fetched successfully"))
+
+})

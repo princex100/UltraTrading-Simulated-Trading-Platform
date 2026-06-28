@@ -32,7 +32,7 @@ const Stock = () => {
         userId: user?._id 
       });
       
-      toast.success('Successfully added to Watchlist!',{id:"watchlist-add-success"});
+      toast.success(res.data.message,{id:"watchlist-add-success"});
 
     }catch(err){
 

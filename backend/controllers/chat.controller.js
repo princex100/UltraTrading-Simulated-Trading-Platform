@@ -81,4 +81,5 @@ User Message: "${message}"`;
         console.error("General Chatbot Error:", error);
         return res.status(500).json({ success: false, message: "Error communicating with AI" });
     }
+    
 };
