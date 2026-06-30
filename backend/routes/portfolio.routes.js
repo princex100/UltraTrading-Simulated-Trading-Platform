@@ -1,8 +1,8 @@
 import { Router } from "express";
-
+import { getUserPortfolio } from "../controllers/portfolio.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router();
 
-// TODO: Define portfolio routes (e.g., /, /history)
-// router.route("/").get(getUserPortfolio)
+router.route("/").get(verifyJWT, getUserPortfolio);
 
 export default router;
