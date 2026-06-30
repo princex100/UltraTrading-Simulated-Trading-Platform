@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { Image as ImageIcon } from 'lucide-react';
 import axiosInstance from '../services/axios';
 
 const NewsPanel = () => {
   const [newsItems, setNewsItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -24,38 +26,102 @@ const NewsPanel = () => {
     fetchNews();
   }, []);
 
+  useEffect(() => {
+    if (newsItems.length > 0) {
+      const intervalId = setInterval(() => {
+        setCurrentNewsIndex((prev) => (prev + 1) % newsItems.length);
+      }, 6000);
+      return () => clearInterval(intervalId);
+    }
+  }, [newsItems]);
+
+  // Extract values safely to handle different API shapes (Finnhub vs Standard)
+  const title = newsItems[currentNewsIndex]?.title || newsItems[currentNewsIndex]?.headline;
+  const description = newsItems[currentNewsIndex]?.description || newsItems[currentNewsIndex]?.summary;
+  const imageUrl = newsItems[currentNewsIndex]?.urlToImage || newsItems[currentNewsIndex]?.image;
+  const sourceName = newsItems[currentNewsIndex]?.source?.name || newsItems[currentNewsIndex]?.source;
+  const url = newsItems[currentNewsIndex]?.url;
+  
+  let timeString = '';
+  if (newsItems[currentNewsIndex]?.publishedAt) {
+    timeString = new Date(newsItems[currentNewsIndex].publishedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } else if (newsItems[currentNewsIndex]?.datetime) {
+    timeString = new Date(newsItems[currentNewsIndex].datetime * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
   return (
-    <div className="w-full md:w-[300px] flex-shrink-0">
-      <div className="bg-white dark:bg-[#1e1e2d] rounded-lg border border-gray-200 dark:border-gray-800 p-4 sticky top-20 transition-colors duration-200">
-        <h2 className="font-semibold text-base mb-4 flex items-center justify-between text-gray-900 dark:text-gray-100">
-          Live Market News
-          <span className="w-4 h-4 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded text-[10px] flex items-center justify-center font-bold">i</span>
-        </h2>
-        
-        {loading ? (
-          <div className="flex justify-center items-center py-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+    <div className="bg-white dark:bg-[#1e1e2d] rounded-xl border border-gray-200 dark:border-gray-800 p-3 sm:p-4 shadow-sm transition-colors duration-200 flex-1 flex flex-col min-h-0">
+      
+      {/* Top Heading */}
+      <h2 className="font-bold text-base mb-4 flex-shrink-0 flex items-center justify-between text-gray-900 dark:text-gray-100">
+        Live Market News
+        <span className="w-4 h-4 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded text-[10px] flex items-center justify-center font-bold">i</span>
+      </h2>
+      
+      {loading ? (
+        <div className="flex-1 flex justify-center items-center py-4">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+        </div>
+      ) : error ? (
+        <p className="text-red-500 text-sm text-center py-2 flex-1">{error}</p>
+      ) : newsItems.length === 0 ? (
+        <p className="text-gray-500 text-sm text-center py-2 flex-1">No news available.</p>
+      ) : (
+        <div 
+          key={currentNewsIndex} 
+          className="flex-1 flex flex-col justify-between overflow-y-auto custom-scrollbar animate-slide-left"
+        >
+          
+          <div className="flex flex-col space-y-4">
+            {/* Image */}
+            <div className="w-full h-[190px] sm:h-[220px] rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 relative">
+              {imageUrl ? (
+                <img 
+                  src={imageUrl} 
+                  alt="News"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextElementSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div className={`absolute inset-0 flex flex-col items-center justify-center text-gray-400 ${imageUrl ? 'hidden' : 'flex'}`}>
+                <ImageIcon size={32} />
+              </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="flex flex-col space-y-2 px-1">
+              {/* Headline */}
+              <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 line-clamp-2 leading-tight">
+                {title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 leading-snug">
+                {description}
+              </p>
+            </div>
           </div>
-        ) : error ? (
-          <p className="text-red-500 text-sm text-center py-2">{error}</p>
-        ) : (
-          <ul className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-            {newsItems.map((item, idx) => (
-              <li key={idx} className="group border-b border-gray-100 dark:border-gray-800 pb-3 last:border-0">
-                <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
-                  <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:underline line-clamp-2">
-                    {item.headline}
-                  </h3>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center justify-between">
-                    <span>{item.source}</span>
-                    <span>{new Date(item.datetime * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                  </div>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+
+          {/* Bottom Section (Source, Time, Button) */}
+          <div className="mt-4 flex flex-col space-y-4 flex-shrink-0 px-1">
+            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+              <span>{sourceName}</span>
+              <span>{timeString}</span>
+            </div>
+
+            <button 
+              onClick={() => window.open(url, "_blank")}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-xl transition-colors flex items-center justify-center"
+            >
+              Visit Article &rarr;
+            </button>
+          </div>
+
+        </div>
+      )}
     </div>
   );
 };
