@@ -13,7 +13,7 @@ const Chatbot = () => {
   const messagesEndRef = useRef(null);
   
   // Only show if user is logged in
-  const user = useSelector((state) => state.user.currentUser);
+  const user = useSelector((state) => state.user.user);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
