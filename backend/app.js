@@ -58,7 +58,6 @@ import watchlistRouter from "./routes/watchlist.routes.js";
 import chatRouter from "./routes/chat.routes.js";
 import newsRouter from "./routes/news.routes.js";
 
-
 // Mount routes
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/stocks", stockRouter);
@@ -67,7 +66,6 @@ app.use("/api/v1/transactions", transactionRouter);
 app.use("/api/v1/watchlist", watchlistRouter);
 app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/news", newsRouter);
-
 
 // Global Error Handler
 import { errorHandler } from "./middlewares/error.middleware.js";
