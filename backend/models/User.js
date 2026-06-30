@@ -56,20 +56,29 @@ const userSchema = new Schema(
         // }
         catagory:{
             type: String,
-            required: true
+    enum: [
+        "Beginner Trader",
+        "Swing Trader",
+        "Day Trader",
+        "Long-term Investor",
+        "Value Investor",
+        "Growth Investor",
+        "Technical Analyst",
+        "Fundamental Analyst"
+    ],
+    default: "Beginner Trader",
+    required: true
         },
         level:{
-            type: Number,
+            type: String,
+            enum:["Level 1","Level 2","Level 3","Level 4","Level 5"],
             required: true
         },
         description:{
             type: String,
             required: true
         },
-        balance:{
-            type: Number,
-            required: true
-        },
+        
 
         
     },

@@ -21,6 +21,7 @@ const Stock = () => {
   const handlewatchlist=async()=>{
     
     if(!user){
+      toast.error("please login to add stock to watchlist")
       navigate('/login')
       return ;
     }

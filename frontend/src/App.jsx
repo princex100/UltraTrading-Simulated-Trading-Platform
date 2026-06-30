@@ -126,7 +126,7 @@ function App() {
 
 
 
-  }, [dispatch]);
+  }, []);
 
 
   if (isCheckingAuth) {
