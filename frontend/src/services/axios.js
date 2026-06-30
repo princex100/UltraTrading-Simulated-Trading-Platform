@@ -79,10 +79,11 @@ axiosInstance.interceptors.response.use(
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         
-        window.location.href = '/login';
+        // if (window.location.pathname !== '/login' && window.location.pathname !== '/register' && window.location.pathname !== '/') {
+        //     window.location.href = '/';
+        // }
 
-
-        throw new Error('Failed to refresh token. Please login again.');
+        throw new Error('Session expired. Please login again.');
       }
     }
 
