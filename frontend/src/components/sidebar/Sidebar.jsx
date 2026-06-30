@@ -14,7 +14,7 @@ import {
 const Sidebar = () => {
     
     const navItems = [
-        { label: "Dashboard", to: "/", icon: House },
+        { label: "Dashboard", to: "/home", icon: House },
         { label: "Portfolio", to: "/portfolio", icon: BriefcaseBusiness },
         { label: "Holdings", to: "/holdings", icon: ChartCandlestick },
         { label: "Watchlist", to: "/watchlist", icon: Bookmark },

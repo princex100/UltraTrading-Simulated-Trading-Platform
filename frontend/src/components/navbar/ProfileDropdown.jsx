@@ -53,7 +53,7 @@ const ProfileDropdown = () => {
         dispatch(logout());
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        navigate('/login');
+        navigate('/home');
 
     };
 

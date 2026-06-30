@@ -27,7 +27,7 @@ const Navbar = () => {
                 {/* Center Section */}
                 <div className="hidden md:flex items-center h-full">
                     
-                    <NavbarItem to="/" label="Home" icon={House} />
+                    <NavbarItem to="/home" label="Home" icon={House} />
                     
                     <NavbarItem to="/about" label="About" icon={Info} />
                     

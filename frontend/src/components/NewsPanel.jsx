@@ -17,7 +17,7 @@ const NewsPanel = () => {
         }
       } catch (err) {
         console.error("Failed to fetch news", err);
-        setError("Failed to load news");
+        setError("Failed to load news. make sure you are conntected  to internet.");
       } finally {
         setLoading(false);
       }
@@ -25,6 +25,12 @@ const NewsPanel = () => {
 
     fetchNews();
   }, []);
+
+
+  setInterval(() => {
+    
+
+  }, 60000);
 
   useEffect(() => {
     if (newsItems.length > 0) {
@@ -35,6 +41,8 @@ const NewsPanel = () => {
     }
   }, [newsItems]);
 
+
+
   // Extract values safely to handle different API shapes (Finnhub vs Standard)
   const title = newsItems[currentNewsIndex]?.title || newsItems[currentNewsIndex]?.headline;
   const description = newsItems[currentNewsIndex]?.description || newsItems[currentNewsIndex]?.summary;
@@ -42,10 +50,14 @@ const NewsPanel = () => {
   const sourceName = newsItems[currentNewsIndex]?.source?.name || newsItems[currentNewsIndex]?.source;
   const url = newsItems[currentNewsIndex]?.url;
   
+
+
   let timeString = '';
   if (newsItems[currentNewsIndex]?.publishedAt) {
+
     timeString = new Date(newsItems[currentNewsIndex].publishedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   } else if (newsItems[currentNewsIndex]?.datetime) {
+    
     timeString = new Date(newsItems[currentNewsIndex].datetime * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 

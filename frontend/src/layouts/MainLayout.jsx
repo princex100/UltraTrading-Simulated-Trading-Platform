@@ -1,13 +1,15 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/navbar/Navbar';
+import SubNavbar from '../components/navbar/SubNavbar';
 import Sidebar from '../components/sidebar/Sidebar';
 import NewsPanel from '../components/NewsPanel';
 import Chatbot from '../components/Chatbot';
 
 const MainLayout = () => {
   return (
-    <div className="min-h-screen bg-[#f3f2ef] dark:bg-[#111111] flex flex-col">
+    <div className="min-h-screen bg-[#f3f2ef] dark:bg-[#111111] flex flex-col relative">
       <Navbar />
+      <SubNavbar />
       <main className="flex-grow flex justify-center py-6 px-4 sm:px-6 lg:px-8 mx-auto w-full text-gray-900 dark:text-gray-100 max-w-[1600px]">
         <div className="flex flex-col md:flex-row w-full gap-6">
           {/* Left Sidebar Area (Graphs) */}
@@ -39,7 +41,7 @@ const MainLayout = () => {
           </div>
           
           {/* Main Content Area (Stocks listing, etc.) */}
-          <div className="flex-grow min-w-0 lg:max-w-2xl xl:max-w-3xl">
+          <div className="flex-grow min-w-0 lg:max-w-2xl xl:max-w-3xl flex flex-col gap-4">
             <Outlet />
           </div>
           
