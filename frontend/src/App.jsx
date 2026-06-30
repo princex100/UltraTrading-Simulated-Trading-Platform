@@ -21,17 +21,23 @@ import Stock from './pages/Stock';
 import About from './pages/About';
 import Docs from './pages/Docs';
 import NotFound from './pages/NotFound';
-
-
+import {setStocks} from '../src/redux/stocksclice.js'
 import Notification from './components/Notification';
-
+// import { socket } from './services/socket.js';
+import { io } from 'socket.io-client';
 
 import axiosInstance from './services/axios';
 import { setUser, logout } from './redux/userSlice';
 import VerifyEmail from './pages/verify-email';
 
 
+
+const socket = io('http://localhost:8000', {
+    withCredentials: true,
+});
+
 function App() {
+
 
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme?.theme || 'light');
@@ -51,6 +57,36 @@ function App() {
 
 
   useEffect(() => {
+
+      const fetchStocks = async () => {
+  
+          try {
+  
+              const res = await axiosInstance.get("/stocks");
+  
+  
+              if (res.data?.data) {
+                  dispatch(setStocks(res.data.data));
+              } else {
+                  dispatch(setStocks(res.data));
+              }
+  
+          } catch (err) {
+  
+              console.log(err);
+  
+          }
+  
+      };
+  
+  
+      fetchStocks();
+      
+  
+     
+  
+
+    
 
     const fetchCurrentUser = async () => {
 
@@ -74,11 +110,21 @@ function App() {
         setIsCheckingAuth(false);
 
       }
-
-    };
-
-
+    }
     fetchCurrentUser();
+
+
+ socket.on("stock", (data) => {
+          dispatch(setStocks(data));
+      });
+  
+  
+      return () => {
+          socket.off("stock");
+      };
+    
+
+
 
   }, [dispatch]);
 
@@ -90,6 +136,13 @@ function App() {
       </div>
     );
   }
+
+
+  
+    // useEffect(() => {
+  
+       
+    // }, [dispatch]);
 
 
   return (

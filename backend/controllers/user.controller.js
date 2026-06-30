@@ -19,8 +19,8 @@ const generateAcessAndRefreshTokens = async (userid) => {
             throw new ApiError(404, "User not found")
         }
 
-        const refreshToken=user.generateRefreshToken()
-        const accessToken=user.generateAccessToken()
+        const refreshToken= await user.generateRefreshToken()
+        const accessToken= await user.generateAccessToken()
 
         user.refreshToken=refreshToken
         user.refreshTokenExpiry=Date.now() + 60 * 60 * 1000 * 7 // 7 days
@@ -215,37 +215,58 @@ export const verifyEmail = asyncHandler(async (req, res) => {
 
 });
 
-export const login=asyncHandler(async(req,res)=>{
-    const {email,password}=req.body
+export const login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
     
-    if(email?.trim()=== ""||password?.trim()=== ""){
-        throw new ApiError(400, "All fields are required")
+
+    if (email?.trim() === "" || password?.trim() === "") {
+        throw new ApiError(400, "All fields are required");
     }
 
-    const user=await User.findOne({email})
 
-    if(!user){
-        throw new ApiError(404, "User not found")
+    const user = await User.findOne({ email });
+
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
     }
 
-    const isPasswordValid=await bcrypt.compare(password,user.password)
 
-    if(!isPasswordValid){
-        throw new ApiError(400, "Invalid password")
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+
+    if (!isPasswordValid) {
+        throw new ApiError(400, "Invalid password");
     }
 
-    const {accessToken,refreshToken}=generateAcessAndRefreshTokens(user._id)
 
-    const options={
-        httpOnly:true,
-        secure:true
-    }
+    const { accessToken, refreshToken } = await generateAcessAndRefreshTokens(user._id);
 
-    res.status(200).
-    cookie("accessToken",accessToken,options).
-    cookie("refreshToken",refreshToken,options)
-    .json(
-        new ApiResponse(200, user, "User logged in successfully")
-    )
 
-})
+    const options = {
+        httpOnly: true,
+        secure: true
+    };
+
+
+    const userResponse = user.toObject();
+    userResponse.accessToken = accessToken;
+    userResponse.refreshToken = refreshToken;
+
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(200, userResponse, "User logged in successfully")
+        );
+
+});
+
+
+export const getCurrentUser = asyncHandler(async (req, res) => {
+    return res
+        .status(200)
+        .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
+});

@@ -17,31 +17,33 @@ const Login = () => {
 
 
   const handleSubmit = async (e) => {
-    
     e.preventDefault();
+
 
     setError(null);
     setLoading(true);
+
 
     const data = { email, password };
 
 
     try {
-
       const response = await axiosInstance.post("/users/login", data);
 
 
       if (response.data) {
         
-        // Usually you extract the user from response.data.data.user
-        dispatch(setUser(response.data.data?.user || response.data));
+        // Extract the user object securely. The API returns it in response.data.data
+        dispatch(setUser(response.data.data));
 
-        // You might need to set localStorage here if not handled in interceptors
+
         if (response.data.data?.accessToken) {
-            localStorage.setItem('accessToken', response.data.data.accessToken);
+            localStorage.setItem('accessToken', JSON.stringify(response.data.data.accessToken));
+            localStorage.setItem('refreshToken', JSON.stringify(response.data.data.refreshToken));
         }
 
       }
+
 
       navigate('/home');
 

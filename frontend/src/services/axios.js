@@ -2,8 +2,10 @@ import axios from 'axios';
 import { store } from '../redux/store';
 import { logout } from '../redux/userSlice';
 
+
 // TODO: Define base URL
 const BASE_URL = 'http://localhost:8000/api/v1';
+
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -13,19 +15,26 @@ const axiosInstance = axios.create({
   // TODO: Add credentials config if needed
 });
 
+
 // Request Interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem('accessToken');
+    const rawToken = localStorage.getItem('accessToken');
+    const accessToken = rawToken ? JSON.parse(rawToken) : null;
+
+
     if (accessToken) {
       config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
+
+
     return config;
   },
   (error) => {
     return Promise.reject(error);
   }
 );
+
 
 // Response Interceptor & Refresh Token Logic
 axiosInstance.interceptors.response.use(
@@ -35,37 +44,52 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+
+    if (error.response?.status === 401 && originalRequest.url !== "/login" && !originalRequest._retry) {
       originalRequest._retry = true;
 
+
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const rawRefreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = rawRefreshToken ? JSON.parse(rawRefreshToken) : null;
+
 
         if (!refreshToken) {
           throw new Error('No refresh token available');
         }
 
+
         const response = await axiosInstance.post('/users/refresh-token', { refreshToken });
+
 
         const { accessToken, refreshToken: newRefreshToken } = response.data.data;
 
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
+
+        localStorage.setItem('accessToken', JSON.stringify(accessToken));
+        localStorage.setItem('refreshToken', JSON.stringify(newRefreshToken));
+
 
         originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+
 
         return await axiosInstance(originalRequest);
       } catch (refreshError) {
         store.dispatch(logout());
+        
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        
         window.location.href = '/login';
+
 
         throw new Error('Failed to refresh token. Please login again.');
       }
     }
+
+
     return Promise.reject(error);
   }
 );
+
 
 export default axiosInstance;
