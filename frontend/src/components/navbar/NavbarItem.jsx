@@ -6,7 +6,7 @@ const NavbarItem = ({ icon: Icon, label, to }) => {
             to={to}
             className={({ isActive }) => {
                 if (isActive) {
-                    return "flex flex-col items-center justify-center h-full px-4 border-b-2 border-blue-700 text-blue-700 font-medium";
+                    return "flex flex-col items-center justify-center h-full px-4 border-b-2 border-transparent text-blue-700 font-medium";
                 }
                 
                 return "flex flex-col items-center justify-center h-full px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-normal";

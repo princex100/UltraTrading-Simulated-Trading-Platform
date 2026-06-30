@@ -35,7 +35,7 @@ const SubNavbar = () => {
                             to={item.to}
                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
                                 isActive 
-                                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
+                                    ? 'text-blue-600 dark:text-blue-400' 
                                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200'
                             }`}
                         >

@@ -27,10 +27,7 @@ const NewsPanel = () => {
   }, []);
 
 
-  setInterval(() => {
-    
-
-  }, 60000);
+  
 
   useEffect(() => {
     if (newsItems.length > 0) {
@@ -40,6 +37,26 @@ const NewsPanel = () => {
       return () => clearInterval(intervalId);
     }
   }, [newsItems]);
+
+  
+   useEffect(() => {
+    setInterval(() => {
+       const fetchNews = async () => {
+      try {
+        const response = await axiosInstance.get('/news/market');
+        if (response.data.success) {
+          setNewsItems(response.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch news", err);
+        setError("Failed to load news. make sure you are conntected  to internet.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNews();
+    }, 60000);
+  }, []);
 
 
 
