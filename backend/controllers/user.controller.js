@@ -318,3 +318,54 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(401, error?.message || "Invalid refresh token");
     }
 });
+
+
+
+import {Stock} from "../models/Stock.js";
+import {Holding} from "../models/Holding.js";
+import {createPortfolioSnapshot} from "../utils/createPortfolioSanpshot.js";
+const buyStock = asyncHandler(async (req, res) => {
+
+    const stockId=req.params.stockId;
+    const {quantity}=req.body;
+    const user=req.user;
+
+    if(!stockId || !quantity || !user){
+        throw new ApiError(400,"All fields are required");
+    }
+
+    const stock=await Stock.findById(stockId);
+    if(!stock){
+        throw new ApiError(404,"Stock not found");
+    }
+    const totalValue=stock.price*quantity;
+    if(user.balance<totalValue){
+        throw new ApiError(400,"Insufficient balance");
+    }
+    user.balance-=totalValue;
+    
+    await user.save();
+
+    const existingHolding=await Holding.findOne({
+        userId:req.user._id,
+        stockId:stockId
+    });
+    if(existingHolding){
+        existingHolding.quantity+=quantity;
+        await existingHolding.save();
+    }
+
+    const holding=new Holding({
+        userId:req.user._id,
+        stockId:stockId,
+        quantity:quantity,
+        
+    });
+
+    await holding.save();
+    await createPortfolioSnapshot(user._id);
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, "Stock bought successfully"));
+});
